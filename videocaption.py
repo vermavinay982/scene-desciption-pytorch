@@ -96,22 +96,15 @@ def caption_image_beam_search(encoder, decoder, image, word_map, beam_size=3):
     while True:
 
         embeddings = decoder.embedding(k_prev_words).squeeze(1)  # (s, embed_dim)
-
         awe, alpha = decoder.attention(encoder_out, h)  # (s, encoder_dim), (s, num_pixels)
-
         alpha = alpha.view(-1, enc_image_size, enc_image_size)  # (s, enc_image_size, enc_image_size)
-
         gate = decoder.sigmoid(decoder.f_beta(h))  # gating scalar, (s, encoder_dim)
         awe = gate * awe
-
         h, c = decoder.decode_step(torch.cat([embeddings, awe], dim=1), (h, c))  # (s, decoder_dim)
-
         scores = decoder.fc(h)  # (s, vocab_size)
         scores = F.log_softmax(scores, dim=1)
-
         # Add
         scores = top_k_scores.expand_as(scores) + scores  # (s, vocab_size)
-
         # For the first step, all k points will have the same scores (since same k previous words, h, c)
         if step == 1:
             top_k_scores, top_k_words = scores[0].topk(k, 0, True, True)  # (s)
