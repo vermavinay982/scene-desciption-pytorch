@@ -1,31 +1,22 @@
-# Objective
+# Story Creator based on Input Image
 
 **To build a model that can generate a descriptive caption for an image we provide it.**
 
-In the interest of keeping things simple, let's implement the [_Show, Attend, and Tell_](https://arxiv.org/abs/1502.03044) paper. This is by no means the current state-of-the-art, but is still pretty darn amazing. The authors' original implementation can be found [here](https://github.com/kelvinxu/arctic-captions).
+[_Show, Attend, and Tell_](https://arxiv.org/abs/1502.03044) paper
 
-This model learns _where_ to look.
-
-As you generate a caption, word by word, you can see the model's gaze shifting across the image.
-
-This is possible because of its _Attention_ mechanism, which allows it to focus on the part of the image most relevant to the word it is going to utter next.
-
-Here are some captions generated on _test_ images not seen during training or validation:
+This model learns _where_ to look. As you generate a caption, word by word, you can see the model's gaze shifting across the image. This is possible because of its _Attention_ mechanism, which allows it to focus on the part of the image most relevant to the word it is going to utter next.
 
 ---
 
-![](./img/plane.png)
+![](target/bike.png_processed.png)
 
----
 
-![](./img/boats.png)
-
----
+![](mirror.png_processed.png)
 
 
 # Concepts
 
-* **Image captioning**. duh.
+* **Image captioning**
 
 * **Encoder-Decoder architecture**. Typically, a model that generates sequences will use an Encoder to encode the input into a fixed form and a Decoder to decode it, word by word, into a sequence.
 
@@ -35,3 +26,4 @@ Here are some captions generated on _test_ images not seen during training or va
 
 * **Beam Search**. This is where you don't let your Decoder be lazy and simply choose the words with the _best_ score at each decode-step. Beam Search is useful for any language modeling problem because it finds the most optimal sequence.
 
+Thanks
