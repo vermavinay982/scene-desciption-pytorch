@@ -1,4 +1,4 @@
-# Story Creator based on Input Image
+# CamEye
 
 **To build a model that can generate a descriptive caption for an image we provide it.**
 
