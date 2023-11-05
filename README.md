@@ -8,10 +8,10 @@ This model learns _where_ to look. As you generate a caption, word by word, you 
 
 ---
 
-![](target/bike.png_processed.png)
+![](assets/target/bike.png_processed.png)
 
 
-![](mirror.png_processed.png)
+![](assets/mirror.png_processed.png)
 
 
 # Concepts
