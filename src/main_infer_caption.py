@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import skimage.transform
 import argparse
-from scipy.misc import imread, imresize
+# from scipy.misc import imresize
 from PIL import Image
-
+import glob
 import cv2
 import os
 
@@ -37,17 +37,19 @@ def caption_image_beam_search(encoder, decoder, image_path, word_map, beam_size=
     # img = Image.open(image_path).convert('RGB')
     # ISSUE OF ALPHA CHANNEL IN 4D IMAGE - CONVERTED TO 3D
     img = cv2.imread(image_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
+    # img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
+    img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
 
     if len(img.shape) == 2:
         img = img[:, :, np.newaxis]
         img = np.concatenate([img, img, img], axis=2)
-    img = imresize(img, (256, 256))
+    img = cv2.resize(img, (256, 256))
     img = img.transpose(2, 0, 1)
     img = img / 255.
     img = torch.FloatTensor(img).to(device)
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
+    normalize = transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225])
     transform = transforms.Compose([normalize])
     image = transform(img)  # (3, 256, 256)
 
@@ -118,12 +120,14 @@ def caption_image_beam_search(encoder, decoder, image_path, word_map, beam_size=
 
         # Add new words to sequences, alphas
         seqs = torch.cat([seqs[prev_word_inds.long()], next_word_inds.unsqueeze(1)], dim=1)  # (s, step+1)
-        seqs_alpha = torch.cat([seqs_alpha[prev_word_inds.long()], alpha[prev_word_inds.long()].unsqueeze(1)],
-                               dim=1)  # (s, step+1, enc_image_size, enc_image_size)
+        seqs_alpha = torch.cat(
+            [seqs_alpha[prev_word_inds.long()], alpha[prev_word_inds.long()].unsqueeze(1)],
+            dim=1)  # (s, step+1, enc_image_size, enc_image_size)
 
         # Which sequences are incomplete (didn't reach <end>)?
-        incomplete_inds = [ind for ind, next_word in enumerate(next_word_inds) if
-                           next_word != word_map['<end>']]
+        incomplete_inds = [
+            ind for ind, next_word in enumerate(next_word_inds) if
+            next_word != word_map['<end>']]
         complete_inds = list(set(range(len(next_word_inds))) - set(incomplete_inds))
 
         # Set aside complete sequences
@@ -223,10 +227,10 @@ if __name__ == '__main__':
     file_path = args.img
     print('Model Loaded','# '*40)
 
-    folder = 'target'
-    files = os.listdir(folder)
+    folder = 'target_student'
+    files = glob.glob(f"{folder}/*.jpg")
     for file in files:
-        file_path = os.path.join(folder, file)
+        file_path = file
         # Encode, decode with attention and beam search
         print(file_path)
         try:
