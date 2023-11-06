@@ -15,7 +15,9 @@ import glob
 import cv2
 import os
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
+
 
 
 def caption_image_beam_search(encoder, decoder, image_path, word_map, beam_size=3):
@@ -195,23 +197,23 @@ def visualize_att(image_path, seq, alphas, rev_word_map, smooth=True):
             plt.imshow(alpha, alpha=0.8)
         plt.set_cmap(cm.Greys_r)
         plt.axis('off')
-    plt.savefig(f'{image_path}_processed.png')
-    plt.show()
+    plt.savefig(f'{image_path}_processed_3.png')
+    # plt.show()
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Show, Attend, and Tell - Tutorial - Generate Caption')
+    # model_path = "BEST_checkpoint_coco_5_cap_per_img_5_min_word_freq.pth.tar"
+    model_path = "v2_checkpoint_coco_5_cap_per_img_5_min_word_freq.pth.tar"
+    wordmap_path = r"D:\Partition\PROJECTS\__Personal\utd_task\CV-Task\CV-Task\WORDMAP_coco_5_cap_per_img_5_min_word_freq.json"
+    
+    # model_path = "orig_BEST_checkpoint_coco_5_cap_per_img_5_min_word_freq.pth.tar" ; wordmap_path = "wordmap.json"
 
-    parser.add_argument('--img', '-i', help='path to image')
-    parser.add_argument('--model', '-m', help='path to model')
-    parser.add_argument('--word_map', '-wm', help='path to word map JSON')
-    parser.add_argument('--beam_size', '-b', default=5, type=int, help='beam size for beam search')
-    parser.add_argument('--dont_smooth', dest='smooth', action='store_false', help='do not smooth alpha overlay')
 
-    args = parser.parse_args()
+    beam_size = 5 # beam size for beam search
+    smooth = False
 
     # Load model
-    checkpoint = torch.load(args.model, map_location=str(device))
+    checkpoint = torch.load(model_path, map_location=str(device))
     decoder = checkpoint['decoder']
     decoder = decoder.to(device)
     decoder.eval()
@@ -220,24 +222,22 @@ if __name__ == '__main__':
     encoder.eval()
 
     # Load word map (word2ix)
-    with open(args.word_map, 'r') as j:
-        word_map = json.load(j)
+    word_map = json.load(open(wordmap_path, 'r'))
     rev_word_map = {v: k for k, v in word_map.items()}  # ix2word
 
-    file_path = args.img
     print('Model Loaded','# '*40)
-
     folder = 'target_student'
-    files = glob.glob(f"{folder}/*.jpg")
+    files = glob.glob(f"{folder}/gray/*.jpg")
     for file in files:
         file_path = file
         # Encode, decode with attention and beam search
         print(file_path)
         try:
-            seq, alphas = caption_image_beam_search(encoder, decoder, file_path, word_map, args.beam_size)
+            seq, alphas = caption_image_beam_search(encoder, decoder, file_path, word_map, beam_size)
             alphas = torch.FloatTensor(alphas)
             # Visualize caption and attention of best sequence
-            visualize_att(file_path, seq, alphas, rev_word_map, args.smooth)
+            visualize_att(file_path, seq, alphas, rev_word_map, smooth)
         except Exception as e:
+            # raise e
             print(e)
             pass
