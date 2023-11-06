@@ -28,9 +28,6 @@ def create_input_files(dataset, karpathy_json_path, image_folder, captions_per_i
 
     assert dataset in {'coco', 'flickr8k', 'flickr30k'}
 
-    karpathy_json_path = r"D:\Partition\PROJECTS\__Personal\utd_task\CV-Task\CV-Task\descriptions.json"
-    output_folder = r"D:\Partition\PROJECTS\__Personal\utd_task\CV-Task\CV-Task"
-    image_folder = r"D:\Partition\PROJECTS\__Personal\utd_task\CV-Task\CV-Task\images\images"
     # Read Karpathy JSON
     with open(karpathy_json_path, 'r') as j:
         data = json.load(j)

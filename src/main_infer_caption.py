@@ -198,17 +198,16 @@ def visualize_att(image_path, seq, alphas, rev_word_map, smooth=True):
         plt.set_cmap(cm.Greys_r)
         plt.axis('off')
     plt.savefig(f'{image_path}_processed_3.png')
+    plt.clf()
     # plt.show()
 
 
 if __name__ == '__main__':
     # model_path = "BEST_checkpoint_coco_5_cap_per_img_5_min_word_freq.pth.tar"
-    model_path = "v2_checkpoint_coco_5_cap_per_img_5_min_word_freq.pth.tar"
+    model_path = "v4_checkpoint_coco_5_cap_per_img_5_min_word_freq.pth.tar"
     wordmap_path = r"D:\Partition\PROJECTS\__Personal\utd_task\CV-Task\CV-Task\WORDMAP_coco_5_cap_per_img_5_min_word_freq.json"
     
     # model_path = "orig_BEST_checkpoint_coco_5_cap_per_img_5_min_word_freq.pth.tar" ; wordmap_path = "wordmap.json"
-
-
     beam_size = 5 # beam size for beam search
     smooth = False
 
@@ -227,7 +226,7 @@ if __name__ == '__main__':
 
     print('Model Loaded','# '*40)
     folder = 'target_student'
-    files = glob.glob(f"{folder}/gray/*.jpg")
+    files = glob.glob(f"{folder}/*.jpg")
     for file in files:
         file_path = file
         # Encode, decode with attention and beam search
